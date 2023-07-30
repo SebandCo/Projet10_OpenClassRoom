@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+import datetime
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -104,6 +106,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "project.User"
 
+AUTH_PROFILE_MODULE  = "project.User"
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -129,5 +133,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS" : "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 5,
-    "DEFAULT_AUTHENTICATION_CLASSES" : ("rest_framework_simplejwt.authentication.JWTAuthentication",)
+    "DEFAULT_AUTHENTICATION_CLASSES" : ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
+}
+
+# Durée de vie du jeton token
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
 }

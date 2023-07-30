@@ -1,21 +1,19 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MinValueValidator
 
-import datetime
-
-def valeur_annee_actuelle(value):
-    annee_actuelle = datetime.date.today().year
-    return MaxValueValidator(annee_actuelle)(value)
-
+def valeur_annee_actuelle():
+    pass
 
 class User(AbstractUser):
-    age = models.PositiveIntegerField(validators=[MinValueValidator(1900),
-                                                  valeur_annee_actuelle])
+    age = models.PositiveIntegerField(validators=[MinValueValidator(16)])
     can_be_contacted = models.BooleanField(default=False)
     can_data_be_shared = models.BooleanField(default=False)
     contributor = models.BooleanField(default=False)
     created_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.username
 
 class Project(models.Model):
     BACKEND = "Back-end"
