@@ -16,6 +16,22 @@ class ProjectView(ModelViewSet):
 
     def get_queryset(self):
         return models.Project.objects.all()
+    
+    def create(self,request, format=None):
+        # Affecte automatiquement l'auteur et le contributeur
+        if request.data:
+            request.data._mutable = True
+            request.data["author"] = self.request.user.id
+            request.data["contributeur"] = self.request.user.id
+            request.data_mutable = False
+        serializer = serializers.ProjectSerializer(data=request.data)
+        data ={}
+        if serializer.is_valid():
+            data["infos"] = "Votre projet a été créé"
+            serializer.save()
+        else:
+            data["info"] = "Votre saisie comporte des erreurs"
+        return Response(data=data)
 
 class UserView(ModelViewSet):
     serializer_class = serializers.UserSerializer
