@@ -22,7 +22,7 @@ class IssueSerializer(ModelSerializer):
 
     class Meta:
         model = models.Issue
-        fields = ["id", "nom", "statut", "priorite", "author", "attribution", "balise", "progression", "contributeur"]
+        fields = ["id", "nom", "statut", "priorite", "balise", "progression", "project", "author", "attribution"]
 
 
 class RegistrationSerializer(serializers.ModelSerializer):

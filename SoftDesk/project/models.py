@@ -38,6 +38,9 @@ class Project(models.Model):
                                           related_name="Project_Contributeur")
     created_time = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.nom
+
 class Issue(models.Model):
     # Nature de l'Issue
     BUG = "Bug"
@@ -75,9 +78,10 @@ class Issue(models.Model):
     author = models.ForeignKey(User,
                                on_delete=models.PROTECT,
                                related_name="Issue_Auteur")
+    project = models.ForeignKey(Project,
+                                on_delete=models.CASCADE)
     attribution = models.ForeignKey(User,
-                                    default="Problème non affecté",
-                                    on_delete=models.SET_DEFAULT,
+                                    on_delete=models.CASCADE,
                                     related_name="Utilisateur_attribue")
     balise = models.CharField(max_length=20,
                               choices=NATURE_ISSUE)
@@ -88,6 +92,9 @@ class Issue(models.Model):
                                           through="IssueComment",
                                           related_name="Contributions")
     created_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.nom
 
 class IssueComment(models.Model):
     issue = models.ForeignKey(Issue,
