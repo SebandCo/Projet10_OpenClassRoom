@@ -63,6 +63,27 @@ class IssueView(ModelViewSet):
             data["info"] = "Votre saisie comporte des erreurs"
         return Response(data=data)
 
+class IssueCommentView(ModelViewSet):
+    serializer_class = serializers.IssueCommentSerializer
+    permission_classes=[IsAuthenticated, IsAuthor|IsProjectContributor]
+
+    def get_queryset(self):
+        return models.IssueComment.objects.all()
+    
+    def create(self,request, format=None):
+        # Affecte automatiquement l'auteur
+        if request.data:
+            request.data._mutable = True
+            request.data["author"] = self.request.user.id
+            request.data_mutable = False
+        serializer = serializers.IssueSerializer(data=request.data)
+        data ={}
+        if serializer.is_valid():
+            data["infos"] = "Votre commentaire a été créée"
+            serializer.save()
+        else:
+            data["info"] = "Votre saisie comporte des erreurs"
+        return Response(data=data)
 
 class InscriptionView(APIView):
    

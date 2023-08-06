@@ -25,6 +25,7 @@ from project import views
 router = routers.SimpleRouter()
 router.register("project", views.ProjectView, basename="project")
 router.register("issue", views.IssueView, basename="issue")
+router.register("issuecomment", views.IssueCommentView, basename="issuecomment")
 router.register("user", views.UserView, basename="user")
 
 urlpatterns = [

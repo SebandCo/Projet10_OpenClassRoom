@@ -99,8 +99,8 @@ class Issue(models.Model):
 class IssueComment(models.Model):
     issue = models.ForeignKey(Issue,
                               on_delete=models.CASCADE)
-    contributeur = models.ForeignKey(User,
-                                     on_delete=models.SET_DEFAULT,
-                                     default="contributeur inconnu")
+    author = models.ForeignKey(User,
+                               on_delete=models.SET_DEFAULT,
+                               default="contributeur inconnu")
     description = models.TextField(max_length=2048)
     created_time = models.DateTimeField(auto_now_add=True)

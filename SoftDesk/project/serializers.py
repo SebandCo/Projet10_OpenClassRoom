@@ -24,6 +24,11 @@ class IssueSerializer(ModelSerializer):
         model = models.Issue
         fields = ["id", "nom", "statut", "priorite", "balise", "progression", "project", "author", "attribution"]
 
+class IssueCommentSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.IssueComment
+        fields = ["author", "issue", "description"]
 
 class RegistrationSerializer(serializers.ModelSerializer):
 
