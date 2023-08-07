@@ -32,7 +32,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("inscription/", views.InscriptionView.as_view(), name="inscription"),
     path("api-auth/", include("rest_framework.urls")),
-    path("api/token/",TokenObtainPairView.as_view(), name="obtention_token"),
+    path("api/token/", TokenObtainPairView.as_view(), name="obtention_token"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="rafraichissement_token"),
     path("api/", include(router.urls)),
 ]

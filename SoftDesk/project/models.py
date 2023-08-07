@@ -2,8 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator
 
+
 def valeur_annee_actuelle():
     pass
+
 
 class User(AbstractUser):
     age = models.PositiveIntegerField(validators=[MinValueValidator(16)])
@@ -14,7 +16,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-    
+
 
 class Project(models.Model):
     BACKEND = "Back-end"
@@ -22,11 +24,11 @@ class Project(models.Model):
     IOS = "iOS"
     ANDROID = "Android"
 
-    TYPE_PROJET = [(BACKEND,"Back-end"),
-                   (FRONTEND,"Front-end"),
-                   (IOS,"iOS"),
-                   (ANDROID,"Android")]
-    
+    TYPE_PROJET = [(BACKEND, "Back-end"),
+                   (FRONTEND, "Front-end"),
+                   (IOS, "iOS"),
+                   (ANDROID, "Android")]
+
     nom = models.CharField(max_length=128,
                            verbose_name="Titre du Projet")
     author = models.ForeignKey(User,
@@ -41,6 +43,7 @@ class Project(models.Model):
 
     def __str__(self):
         return self.nom
+
 
 class Issue(models.Model):
     # Nature de l'Issue
@@ -60,7 +63,7 @@ class Issue(models.Model):
     PRIORITE_ISSUE = [(LOW, "Low"),
                       (MEDIUM, "Medium"),
                       (HIGH, "High")]
-    
+
     # Statut de progression de l'Issue
     TO_DO = "To Do"
     IN_PROGRESS = "In Progress"
@@ -96,6 +99,7 @@ class Issue(models.Model):
 
     def __str__(self):
         return self.nom
+
 
 class IssueComment(models.Model):
     issue = models.ForeignKey(Issue,
