@@ -11,12 +11,19 @@ from . import models
 from . import serializers
 
 class ProjectView(ModelViewSet):
-    serializer_class = serializers.ProjectSerializer
+    serializer_class = serializers.ProjectListSerializer
+    detail_serializer_class = serializers.ProjectDetailSerializer
     permission_classes=[IsAuthenticated, IsAuthor|IsContributor]
 
     def get_queryset(self):
         return models.Project.objects.all()
     
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return self.detail_serializer_class
+        else:
+            return super().get_serializer_class()
+
     def create(self,request, format=None):
         # Affecte automatiquement l'auteur et le contributeur
         if request.data:
@@ -24,7 +31,7 @@ class ProjectView(ModelViewSet):
             request.data["author"] = self.request.user.id
             request.data["contributeur"] = self.request.user.id
             request.data_mutable = False
-        serializer = serializers.ProjectSerializer(data=request.data)
+        serializer = serializers.ProjectDetailSerializer(data=request.data)
         data ={}
         if serializer.is_valid():
             data["infos"] = "Votre projet a été créé"
@@ -42,19 +49,26 @@ class UserView(ModelViewSet):
         return models.User.objects.filter(id=IdUser)
     
 class IssueView(ModelViewSet):
-    serializer_class = serializers.IssueSerializer
+    serializer_class = serializers.IssueListSerializer
+    detail_serializer_class = serializers.IssueDetailSerializer
     permission_classes=[IsAuthenticated, IsAuthor|IsProjectContributor]
     
     def get_queryset(self):
         return models.Issue.objects.all()
     
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return self.detail_serializer_class
+        else:
+            return super().get_serializer_class()
+
     def create(self,request, format=None):
         # Affecte automatiquement l'auteur
         if request.data:
             request.data._mutable = True
             request.data["author"] = self.request.user.id
             request.data_mutable = False
-        serializer = serializers.IssueSerializer(data=request.data)
+        serializer = serializers.IssueCreationSerializer(data=request.data)
         data ={}
         if serializer.is_valid():
             data["infos"] = "Votre issue a été créée"
@@ -64,19 +78,26 @@ class IssueView(ModelViewSet):
         return Response(data=data)
 
 class IssueCommentView(ModelViewSet):
-    serializer_class = serializers.IssueCommentSerializer
+    serializer_class = serializers.IssueCommentListSerializer
+    detail_serializer_class = serializers.IssueCommentDetailSerializer
     permission_classes=[IsAuthenticated, IsAuthor|IsProjectContributor]
 
     def get_queryset(self):
         return models.IssueComment.objects.all()
     
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return self.detail_serializer_class
+        else:
+            return super().get_serializer_class()
+
     def create(self,request, format=None):
         # Affecte automatiquement l'auteur
         if request.data:
             request.data._mutable = True
             request.data["author"] = self.request.user.id
             request.data_mutable = False
-        serializer = serializers.IssueSerializer(data=request.data)
+        serializer = serializers.IssueCommentCreationSerializer(data=request.data)
         data ={}
         if serializer.is_valid():
             data["infos"] = "Votre commentaire a été créée"

@@ -14,6 +14,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+    
 
 class Project(models.Model):
     BACKEND = "Back-end"
@@ -98,7 +99,8 @@ class Issue(models.Model):
 
 class IssueComment(models.Model):
     issue = models.ForeignKey(Issue,
-                              on_delete=models.CASCADE)
+                              on_delete=models.CASCADE,
+                              related_name="issue")
     author = models.ForeignKey(User,
                                on_delete=models.SET_DEFAULT,
                                default="contributeur inconnu")
