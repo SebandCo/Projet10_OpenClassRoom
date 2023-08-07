@@ -8,6 +8,13 @@ from .permissions import IsAuthor, IsContributor, IsProjectContributor
 from . import models
 from . import serializers
 
+"""Chaque View peut se décliner en deux versions
+- serializer_class : donne un aperçu de tout les models
+- detail_serializer_class : donne un détail d'un model en particulier
+
+La création d'un model lié à un autre model se fait via l'id du model à choisir
+"""
+
 
 class ProjectView(ModelViewSet):
     serializer_class = serializers.ProjectListSerializer

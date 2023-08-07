@@ -8,6 +8,9 @@ def valeur_annee_actuelle():
 
 
 class User(AbstractUser):
+    """ User hérite de la classe AbstractUser de Django qui comporte les champs
+    id / password / username / first_name / last_name / email
+    Les champs suivant sont rajoutés"""
     age = models.PositiveIntegerField(validators=[MinValueValidator(16)])
     can_be_contacted = models.BooleanField(default=False)
     can_data_be_shared = models.BooleanField(default=False)
@@ -19,6 +22,8 @@ class User(AbstractUser):
 
 
 class Project(models.Model):
+    """ L'objet Project est la ressource principale utilisée par le User
+    Un Project peut posséder plusieurs Issues"""
     BACKEND = "Back-end"
     FRONTEND = "Front-end"
     IOS = "iOS"
@@ -46,6 +51,9 @@ class Project(models.Model):
 
 
 class Issue(models.Model):
+    """ L'objet Issue définit les problème d'un Project
+    Une Issue n'est rattaché qu'à un seul Project
+    Une Issue peut posséder plusieurs Comments"""
     # Nature de l'Issue
     BUG = "Bug"
     TACHE = "Tâche"
@@ -102,6 +110,8 @@ class Issue(models.Model):
 
 
 class IssueComment(models.Model):
+    """Le Comment définit les commentaires d'un problème
+    Un Comment n'est rattaché qu'à une seule Issue"""
     issue = models.ForeignKey(Issue,
                               on_delete=models.CASCADE,
                               related_name="issue")

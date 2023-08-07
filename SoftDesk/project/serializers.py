@@ -2,6 +2,12 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
 from . import models
+""" Chaque models a deux Serializers
+- ***ListSerializer : Vue d'ensemble des models
+- ***DetailSerializer : Vue de détail d'un model
+
+Pour les Serializers basé sur HyperlinkedModelSerializer un autre serializer a été rajouté
+- ***CreationSerializer : Permet de créer un model en utilisant l'id du model lié"""
 
 # Gestion des Utilisateurs
 

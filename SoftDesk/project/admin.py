@@ -11,7 +11,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ("nom", "statut", "priorite", "attribution", "balise","progression")
+    list_display = ("nom", "statut", "priorite", "attribution", "balise", "progression")
 
 
 class CommentAdmin(admin.ModelAdmin):
