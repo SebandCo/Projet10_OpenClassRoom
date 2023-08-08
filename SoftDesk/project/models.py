@@ -116,7 +116,6 @@ class IssueComment(models.Model):
                               on_delete=models.CASCADE,
                               related_name="issue")
     author = models.ForeignKey(User,
-                               on_delete=models.SET_DEFAULT,
-                               default="contributeur inconnu")
+                               on_delete=models.CASCADE)
     description = models.TextField(max_length=2048)
     created_time = models.DateTimeField(auto_now_add=True)

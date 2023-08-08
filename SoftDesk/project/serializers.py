@@ -31,6 +31,13 @@ class UserSerializer(ModelSerializer):
         fields = ["id", "username", "first_name", "last_name", "email", "age", "can_be_contacted", "can_data_be_shared"]
 
 
+class UserCreationSerializer(ModelSerializer):
+
+    class Meta:
+        model = models.User
+        fields = ["id", "username", "password", "first_name", "last_name", "email", "age", "can_be_contacted", "can_data_be_shared"]
+
+
 class UserListSerializer(ModelSerializer):
     class Meta:
         model = models.User
@@ -62,6 +69,13 @@ class UserDetailSerializer(ModelSerializer):
 # Gestion des Projets
 
 
+class ProjectCreationSerializer(ModelSerializer):
+    
+    class Meta:
+        model = models.Project
+        fields = ["nom", "author", "contributeur", "description", "type" ]
+
+
 class ProjectListSerializer(ModelSerializer):
 
     author = UserListSerializer()
@@ -71,7 +85,7 @@ class ProjectListSerializer(ModelSerializer):
 
     class Meta:
         model = models.Project
-        fields = ["id", "nom", "author", "description", "type"]
+        fields = ["id", "nom", "author", "contributeur", "description", "type"]
 
 
 class ProjectDetailSerializer(ModelSerializer):

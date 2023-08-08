@@ -37,8 +37,9 @@ class ProjectView(ModelViewSet):
             request.data["author"] = self.request.user.id
             request.data["contributeur"] = self.request.user.id
             request.data_mutable = False
-        serializer = serializers.ProjectDetailSerializer(data=request.data)
+        serializer = serializers.ProjectCreationSerializer(data=request.data)
         data = {}
+        print(serializer)
         if serializer.is_valid():
             data["infos"] = "Votre projet a été créé"
             serializer.save()
@@ -119,7 +120,7 @@ class IssueCommentView(ModelViewSet):
 class InscriptionView(APIView):
 
     def post(self, request, format=None):
-        serializer = serializers.UserSerializer(data=request.data)
+        serializer = serializers.UserCreationSerializer(data=request.data)
         data = {}
         if serializer.is_valid():
             user = serializer.save()
