@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
 from . import models
+from collections import OrderedDict
 """ Chaque models a deux Serializers
 - ***ListSerializer : Vue d'ensemble des models
 - ***DetailSerializer : Vue de détail d'un model
@@ -57,23 +58,29 @@ class UserDetailSerializer(ModelSerializer):
         model = models.User
         fields = ["id", "username", "first_name", "last_name", "email", "age", "can_be_contacted", "can_data_be_shared"]
 
-        def to_representation(self, instance):
-            data = super().to_representation(instance)
-            can_be_contacted = instance.can_be_contacted
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        can_be_contacted = instance.can_be_contacted
+        can_data_be_shared = instance.can_data_be_shared
 
-            if not can_be_contacted:
-                data.pop("email")
+        if can_be_contacted is False:
+            representation["email"] = "Ne souhaite pas être contacté"
 
-            return data
+        if can_data_be_shared is False:
+            representation["first_name"] = "Ne souhaite pas être partagé"
+            representation["last_name"] = "Ne souhaite pas être partagé"
+            representation["age"] = "Ne souhaite pas être partagé"
+
+        return representation
 
 # Gestion des Projets
 
 
 class ProjectCreationSerializer(ModelSerializer):
-    
+
     class Meta:
         model = models.Project
-        fields = ["nom", "author", "contributeur", "description", "type" ]
+        fields = ["nom", "author", "contributeur", "description", "type"]
 
 
 class ProjectListSerializer(ModelSerializer):
@@ -95,11 +102,12 @@ class ProjectDetailSerializer(ModelSerializer):
     class Meta:
         model = models.Project
         fields = ["id", "nom", "author", "description", "type", "contributeur", "created_time"]
+        read_only_fields = ["id", "author", "created_time"]
 
 # Gestion des Issues
 
 
-class IssueListSerializer(serializers.HyperlinkedModelSerializer):
+class IssueListSerializer(ModelSerializer):
 
     author = UserListSerializer()
 
@@ -110,10 +118,12 @@ class IssueListSerializer(serializers.HyperlinkedModelSerializer):
 
 class IssueDetailSerializer(serializers.HyperlinkedModelSerializer):
     author = UserDetailSerializer()
-
+    
     class Meta:
+        
         model = models.Issue
-        fields = ["id", "nom", "statut", "priorite", "balise", "progression", "project", "author", "attribution"]
+        fields = ["id", "nom", "statut", "priorite", "balise", "progression", "project", "author", "attribution", "created_time"]
+        read_only_fields = ["id", "project", "author", "created_time"]
 
 
 class IssueCreationSerializer(ModelSerializer):
@@ -136,10 +146,11 @@ class IssueCommentListSerializer(serializers.HyperlinkedModelSerializer):
 
 class IssueCommentDetailSerializer(serializers.HyperlinkedModelSerializer):
     author = UserDetailSerializer()
-
     class Meta:
         model = models.IssueComment
-        fields = ["author", "issue", "description"]
+        print("test si Issue")
+        fields = ["id","author", "issue", "description", "created_time"]
+        read_only_fields = ["id", "author", "issue", "created_time"]
 
 
 class IssueCommentCreationSerializer(ModelSerializer):

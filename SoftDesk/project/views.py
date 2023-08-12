@@ -19,7 +19,7 @@ La création d'un model lié à un autre model se fait via l'id du model à choi
 class ProjectView(ModelViewSet):
     serializer_class = serializers.ProjectListSerializer
     detail_serializer_class = serializers.ProjectDetailSerializer
-    permission_classes = [IsAuthenticated, IsAuthor | IsContributor]
+    permission_classes = [IsAuthenticated & IsAuthor | IsContributor]
 
     def get_queryset(self):
         return models.Project.objects.all()
@@ -39,7 +39,6 @@ class ProjectView(ModelViewSet):
             request.data_mutable = False
         serializer = serializers.ProjectCreationSerializer(data=request.data)
         data = {}
-        print(serializer)
         if serializer.is_valid():
             data["infos"] = "Votre projet a été créé"
             serializer.save()
@@ -60,7 +59,7 @@ class UserView(ModelViewSet):
 class IssueView(ModelViewSet):
     serializer_class = serializers.IssueListSerializer
     detail_serializer_class = serializers.IssueDetailSerializer
-    permission_classes = [IsAuthenticated, IsAuthor | IsProjectContributor]
+    permission_classes = [IsAuthenticated & IsAuthor | IsProjectContributor]
 
     def get_queryset(self):
         return models.Issue.objects.all()
@@ -77,7 +76,7 @@ class IssueView(ModelViewSet):
             request.data._mutable = True
             request.data["author"] = self.request.user.id
             request.data_mutable = False
-        serializer = serializers.IssueCreationSerializer(data=request.data)
+        serializer = serializers.IssueCreationSerializer(data=request.data, many=True)
         data = {}
         if serializer.is_valid():
             data["infos"] = "Votre issue a été créée"
@@ -90,7 +89,7 @@ class IssueView(ModelViewSet):
 class IssueCommentView(ModelViewSet):
     serializer_class = serializers.IssueCommentListSerializer
     detail_serializer_class = serializers.IssueCommentDetailSerializer
-    permission_classes = [IsAuthenticated, IsAuthor | IsProjectContributor]
+    permission_classes = [IsAuthenticated & IsAuthor | IsProjectContributor ]
 
     def get_queryset(self):
         return models.IssueComment.objects.all()
@@ -118,6 +117,7 @@ class IssueCommentView(ModelViewSet):
 
 
 class InscriptionView(APIView):
+    permission_classes = []
 
     def post(self, request, format=None):
         serializer = serializers.UserCreationSerializer(data=request.data)
