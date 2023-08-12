@@ -2,6 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.hashers import make_password
 
 from .permissions import IsAuthor, IsContributor, IsProjectContributor
 
@@ -53,7 +54,16 @@ class UserView(ModelViewSet):
 
     def get_queryset(self):
         IdUser = (self.request.user.id)
+        # Crypte le mot de passe si il est indiqué lors d'une mise à jour
+        if self.action == "partial_update" or self.action == "update":
+            if ('password' in self.request.data):
+                password_crypted = make_password(self.request.data['password'])
+                self.request.data._mutable = True
+                self.request.data["password"] = password_crypted
+                self.request.data_mutable = False
+            pass
         return models.User.objects.filter(id=IdUser)
+       
 
 
 class IssueView(ModelViewSet):
@@ -64,6 +74,7 @@ class IssueView(ModelViewSet):
     def get_queryset(self):
         return models.Issue.objects.all()
 
+    # Suivant la requete, change le serializer
     def get_serializer_class(self):
         if self.action == "retrieve":
             return self.detail_serializer_class
@@ -118,10 +129,19 @@ class IssueCommentView(ModelViewSet):
 
 class InscriptionView(APIView):
     permission_classes = []
+    serializer = serializers.UserCreationSerializer
+      
+    def post(self, request): 
+        # Permet de crypter le mot de passe, si il est bien mis dans la requete
+        if ('password' in self.request.data):
+                password_crypted = make_password(self.request.data['password'])
+                request.data._mutable = True
+                request.data["password"] = password_crypted
+                request.data_mutable = False
 
-    def post(self, request, format=None):
-        serializer = serializers.UserCreationSerializer(data=request.data)
+        serializer = self.serializer(data=request.data)
         data = {}
+
         if serializer.is_valid():
             user = serializer.save()
             data['infos'] = "Votre compte a été créer"
@@ -130,3 +150,12 @@ class InscriptionView(APIView):
         else:
             data = serializer.errors
         return Response(data=data)
+    
+    def perform_create(self, serializer):
+        # Hash password but passwords are not required
+        if ('password' in self.request.data):
+            password = make_password(self.request.data['password'])
+            serializer.save(password=password)
+        else:
+            serializer.save()
+

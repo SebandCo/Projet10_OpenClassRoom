@@ -19,8 +19,10 @@ class RegistrationSerializer(ModelSerializer):
         model = models.User
         fields = ["username", "password", "first_name", "last_name", "email", "age", "can_be_contacted", "can_data_be_shared"]
 
-    def save(self):
+    def create(self, validate_data):
+        print("test")
         user = models.User(self)
+        user.set_password(validate_data.get("password"))
         user.save()
         return user
 
@@ -29,14 +31,18 @@ class UserSerializer(ModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ["id", "username", "first_name", "last_name", "email", "age", "can_be_contacted", "can_data_be_shared"]
+        fields = ["id", "username", "password", "first_name", "last_name", "email", "age", "can_be_contacted", "can_data_be_shared"]
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["password"] = "password secret"
+        return representation
 
 class UserCreationSerializer(ModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ["id", "username", "password", "first_name", "last_name", "email", "age", "can_be_contacted", "can_data_be_shared"]
+        fields = ["username", "password", "first_name", "last_name", "email", "age", "can_be_contacted", "can_data_be_shared"]
 
 
 class UserListSerializer(ModelSerializer):
@@ -146,9 +152,9 @@ class IssueCommentListSerializer(serializers.HyperlinkedModelSerializer):
 
 class IssueCommentDetailSerializer(serializers.HyperlinkedModelSerializer):
     author = UserDetailSerializer()
+    
     class Meta:
         model = models.IssueComment
-        print("test si Issue")
         fields = ["id","author", "issue", "description", "created_time"]
         read_only_fields = ["id", "author", "issue", "created_time"]
 
