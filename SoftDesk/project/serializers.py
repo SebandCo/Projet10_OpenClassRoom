@@ -147,7 +147,7 @@ class IssueCommentListSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.IssueComment
-        fields = ["id", "author", "issue"]
+        fields = ["id", "author", "issue", "project"]
 
 
 class IssueCommentDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -155,12 +155,20 @@ class IssueCommentDetailSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = models.IssueComment
-        fields = ["id","author", "issue", "description", "created_time"]
+        fields = ["id","author", "issue", "description", "created_time", "project"]
         read_only_fields = ["id", "author", "issue", "created_time"]
-
+    
 
 class IssueCommentCreationSerializer(ModelSerializer):
 
     class Meta:
         model = models.IssueComment
         fields = ["author", "issue", "description"]
+
+    # Affecte automatiquement le project lié à l'issue lors de la création du Comment
+    def create(self, validated_data):
+        id_issue = validated_data["issue"].id
+        issue = models.Issue.objects.get(id=id_issue)
+        id_project = issue.project
+        validated_data["project"] = id_project
+        return models.IssueComment.objects.create(**validated_data)

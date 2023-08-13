@@ -119,3 +119,5 @@ class IssueComment(models.Model):
                                on_delete=models.CASCADE)
     description = models.TextField(max_length=2048)
     created_time = models.DateTimeField(auto_now_add=True)
+    project = models.ForeignKey(Project,
+                                on_delete=models.CASCADE)
