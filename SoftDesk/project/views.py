@@ -32,11 +32,12 @@ class ProjectView(ModelViewSet):
             return super().get_serializer_class()
 
     def create(self, request, format=None):
-        # Affecte automatiquement l'auteur et le contributeur
+        # Affecte automatiquement l'auteur et le contributeur si il n'existe pas
         if request.data:
             request.data._mutable = True
             request.data["author"] = self.request.user.id
-            request.data["contributeur"] = self.request.user.id
+            if not "contributeur" in request.data:
+                request.data["contributeur"] = self.request.user.id            
             request.data_mutable = False
         serializer = serializers.ProjectCreationSerializer(data=request.data)
         data = {}
