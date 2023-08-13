@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import make_password
 
-from .permissions import IsAuthor, IsContributor, IsProjectContributor
+from .permissions import IsAuthor, IsContributor, IsProjectContributor, IsProjectUser
 
 from . import models
 from . import serializers
@@ -20,7 +20,7 @@ La création d'un model lié à un autre model se fait via l'id du model à choi
 class ProjectView(ModelViewSet):
     serializer_class = serializers.ProjectListSerializer
     detail_serializer_class = serializers.ProjectDetailSerializer
-    permission_classes = [IsAuthenticated & IsAuthor | IsContributor]
+    permission_classes = [IsAuthenticated & IsProjectUser]
 
     def get_queryset(self):
         return models.Project.objects.all()

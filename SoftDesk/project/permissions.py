@@ -4,6 +4,14 @@ from rest_framework.generics import get_object_or_404
 from . import models
 
 
+class IsProjectUser(BasePermission):
+    
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return request.user in obj.contributeur.all()
+        else:
+            return request.user.id == obj.author_id
+            
 class IsAuthor(BasePermission):
 
     def has_permission(self, request, view):

@@ -20,7 +20,6 @@ class RegistrationSerializer(ModelSerializer):
         fields = ["username", "password", "first_name", "last_name", "email", "age", "can_be_contacted", "can_data_be_shared"]
 
     def create(self, validate_data):
-        print("test")
         user = models.User(self)
         user.set_password(validate_data.get("password"))
         user.save()
@@ -99,6 +98,13 @@ class ProjectListSerializer(ModelSerializer):
     class Meta:
         model = models.Project
         fields = ["id", "nom", "author", "contributeur", "description", "type"]
+    
+    def to_representation(self, instance):
+        # Cache le nom des contributeurs dans la liste globale
+        representation = super().to_representation(instance)
+        contributeur = instance.contributeur
+        representation["contributeur"] = f"Il y en a {contributeur.count()}"
+        return representation
 
 
 class ProjectDetailSerializer(ModelSerializer):
