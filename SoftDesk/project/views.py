@@ -38,8 +38,8 @@ class ProjectView(ModelViewSet):
         if request.data:
             request.data._mutable = True
             request.data["author"] = self.request.user.id
-            if not "contributeur" in request.data:
-                request.data["contributeur"] = self.request.user.id            
+            if "contributeur" not in request.data:
+                request.data["contributeur"] = self.request.user.id
             request.data_mutable = False
         serializer = serializers.ProjectCreationSerializer(data=request.data)
         data = {}
@@ -66,7 +66,6 @@ class UserView(ModelViewSet):
                 self.request.data_mutable = False
             pass
         return models.User.objects.filter(id=IdUser)
-       
 
 
 class IssueView(viewsets.ModelViewSet):
@@ -77,7 +76,7 @@ class IssueView(viewsets.ModelViewSet):
     def get_queryset(self):
 
         user = self.request.user
-        issue_autorised = models.Issue.objects.filter(Q(project__author=user)|Q(project__contributeur=user)).distinct()
+        issue_autorised = models.Issue.objects.filter(Q(project__author=user) | Q(project__contributeur=user)).distinct()
 
         return issue_autorised
 
@@ -100,7 +99,7 @@ class IssueView(viewsets.ModelViewSet):
         if serializer.is_valid():
             # On vérifie que l'utilisateur fait partie des personnes autorisées du projet
             user = self.request.user
-            liste_project_autorised = models.Project.objects.filter(Q(author=user)|Q(contributeur=user)).distinct()
+            liste_project_autorised = models.Project.objects.filter(Q(author=user) | Q(contributeur=user)).distinct()
             projet_selectionne = models.Project.objects.get(id=serializer.initial_data["project"])
             # Si oui, on enregistre le commentaire
             if projet_selectionne in liste_project_autorised:
@@ -120,7 +119,7 @@ class IssueCommentView(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        issuecomment_autorised = models.IssueComment.objects.filter(Q(project__author=user)|Q(project__contributeur=user)).distinct()
+        issuecomment_autorised = models.IssueComment.objects.filter(Q(project__author=user) | Q(project__contributeur=user)).distinct()
 
         return issuecomment_autorised
 
@@ -142,7 +141,7 @@ class IssueCommentView(ModelViewSet):
         if serializer.is_valid():
             # On vérifie que l'utilisateur fait partie des personnes autorisées du projet
             user = self.request.user
-            liste_project_autorised = models.Project.objects.filter(Q(author=user)|Q(contributeur=user)).distinct()
+            liste_project_autorised = models.Project.objects.filter(Q(author=user) | Q(contributeur=user)).distinct()
             issue_selectionne = models.Issue.objects.get(id=serializer.initial_data["issue"])
             # Si oui, on enregistre le commentaire
             if issue_selectionne in liste_project_autorised:
@@ -158,14 +157,14 @@ class IssueCommentView(ModelViewSet):
 class InscriptionView(APIView):
     permission_classes = []
     serializer = serializers.UserCreationSerializer
-      
-    def post(self, request): 
+
+    def post(self, request):
         # Permet de crypter le mot de passe, si il est bien mis dans la requete
         if ('password' in self.request.data):
-                password_crypted = make_password(self.request.data['password'])
-                request.data._mutable = True
-                request.data["password"] = password_crypted
-                request.data_mutable = False
+            password_crypted = make_password(self.request.data['password'])
+            request.data._mutable = True
+            request.data["password"] = password_crypted
+            request.data_mutable = False
 
         serializer = self.serializer(data=request.data)
         data = {}
@@ -178,7 +177,7 @@ class InscriptionView(APIView):
         else:
             data = serializer.errors
         return Response(data=data)
-    
+
     def perform_create(self, serializer):
         # Hash password but passwords are not required
         if ('password' in self.request.data):
@@ -186,4 +185,3 @@ class InscriptionView(APIView):
             serializer.save(password=password)
         else:
             serializer.save()
-

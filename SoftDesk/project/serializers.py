@@ -37,6 +37,7 @@ class UserSerializer(ModelSerializer):
         representation["password"] = "password secret"
         return representation
 
+
 class UserCreationSerializer(ModelSerializer):
 
     class Meta:
@@ -91,7 +92,7 @@ class ProjectListSerializer(ModelSerializer):
     class Meta:
         model = models.Project
         fields = ["id", "nom", "author", "contributeur", "description", "type"]
-    
+
     def to_representation(self, instance):
         # Cache le nom des contributeurs dans la liste globale
         representation = super().to_representation(instance)
@@ -126,7 +127,7 @@ class IssueDetailSerializer(serializers.HyperlinkedModelSerializer):
     attribution = UserDetailSerializer()
 
     class Meta:
-        
+
         model = models.Issue
         fields = ["id", "nom", "statut", "priorite", "balise", "progression", "project", "author", "attribution", "created_time"]
         read_only_fields = ["id", "project", "author", "created_time"]
@@ -152,12 +153,12 @@ class IssueCommentListSerializer(serializers.HyperlinkedModelSerializer):
 
 class IssueCommentDetailSerializer(serializers.HyperlinkedModelSerializer):
     author = UserDetailSerializer()
-    
+
     class Meta:
         model = models.IssueComment
-        fields = ["id","author", "issue", "description", "created_time", "project"]
+        fields = ["id", "author", "issue", "description", "created_time", "project"]
         read_only_fields = ["id", "author", "issue", "created_time"]
-    
+
 
 class IssueCommentCreationSerializer(ModelSerializer):
 
