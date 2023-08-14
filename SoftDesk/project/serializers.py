@@ -2,7 +2,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
 from . import models
-from collections import OrderedDict
+
 """ Chaque models a deux Serializers
 - ***ListSerializer : Vue d'ensemble des models
 - ***DetailSerializer : Vue de détail d'un model
@@ -48,13 +48,6 @@ class UserListSerializer(ModelSerializer):
     class Meta:
         model = models.User
         fields = ["username"]
-
-
-class UserContactedSerializer(serializers.RelatedField):
-
-    class Meta:
-        model = models.User
-        fields = ["id", "username", "first_name", "last_name", "email", "age"]
 
 
 class UserDetailSerializer(ModelSerializer):
@@ -130,7 +123,8 @@ class IssueListSerializer(ModelSerializer):
 
 class IssueDetailSerializer(serializers.HyperlinkedModelSerializer):
     author = UserDetailSerializer()
-    
+    attribution = UserDetailSerializer()
+
     class Meta:
         
         model = models.Issue

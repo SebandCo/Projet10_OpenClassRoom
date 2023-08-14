@@ -3,8 +3,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import make_password
+from rest_framework import viewsets
+from django.db.models import Q
 
-from .permissions import IsAuthor, IsContributor, IsProjectContributor, IsProjectUser
+from .permissions import IsAuthor, IsProjectUser
 
 from . import models
 from . import serializers
@@ -67,13 +69,17 @@ class UserView(ModelViewSet):
        
 
 
-class IssueView(ModelViewSet):
+class IssueView(viewsets.ModelViewSet):
     serializer_class = serializers.IssueListSerializer
     detail_serializer_class = serializers.IssueDetailSerializer
-    permission_classes = [IsAuthenticated & IsAuthor | IsProjectContributor]
+    permission_classes = [IsAuthenticated & IsAuthor]
 
     def get_queryset(self):
-        return models.Issue.objects.all()
+
+        user = self.request.user
+        issue_autorised = models.Issue.objects.filter(Q(project__author=user)|Q(project__contributeur=user)).distinct()
+
+        return issue_autorised
 
     # Suivant la requete, change le serializer
     def get_serializer_class(self):
@@ -90,9 +96,18 @@ class IssueView(ModelViewSet):
             request.data_mutable = False
         serializer = serializers.IssueCreationSerializer(data=request.data, many=True)
         data = {}
+
         if serializer.is_valid():
-            data["infos"] = "Votre issue a été créée"
-            serializer.save()
+            # On vérifie que l'utilisateur fait partie des personnes autorisées du projet
+            user = self.request.user
+            liste_project_autorised = models.Project.objects.filter(Q(author=user)|Q(contributeur=user)).distinct()
+            projet_selectionne = models.Project.objects.get(id=serializer.initial_data["project"])
+            # Si oui, on enregistre le commentaire
+            if projet_selectionne in liste_project_autorised:
+                data["infos"] = "Votre issue a été créée"
+                serializer.save()
+            else:
+                data["infos"] = "Vous n'avez pas accès à ce projet"
         else:
             data["info"] = "Votre saisie comporte des erreurs"
         return Response(data=data)
@@ -101,10 +116,13 @@ class IssueView(ModelViewSet):
 class IssueCommentView(ModelViewSet):
     serializer_class = serializers.IssueCommentListSerializer
     detail_serializer_class = serializers.IssueCommentDetailSerializer
-    permission_classes = [IsAuthenticated & IsAuthor | IsProjectContributor ]
+    permission_classes = [IsAuthenticated & IsAuthor]
 
     def get_queryset(self):
-        return models.IssueComment.objects.all()
+        user = self.request.user
+        issuecomment_autorised = models.IssueComment.objects.filter(Q(project__author=user)|Q(project__contributeur=user)).distinct()
+
+        return issuecomment_autorised
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -120,9 +138,18 @@ class IssueCommentView(ModelViewSet):
             request.data_mutable = False
         serializer = serializers.IssueCommentCreationSerializer(data=request.data)
         data = {}
+
         if serializer.is_valid():
-            data["infos"] = "Votre commentaire a été créée"
-            serializer.save()
+            # On vérifie que l'utilisateur fait partie des personnes autorisées du projet
+            user = self.request.user
+            liste_project_autorised = models.Project.objects.filter(Q(author=user)|Q(contributeur=user)).distinct()
+            issue_selectionne = models.Issue.objects.get(id=serializer.initial_data["issue"])
+            # Si oui, on enregistre le commentaire
+            if issue_selectionne in liste_project_autorised:
+                data["infos"] = "Votre commentaire a été créée"
+                serializer.save()
+            else:
+                data["infos"] = "Vous n'avez pas accès à cette issue"
         else:
             data["info"] = "Votre saisie comporte des erreurs"
         return Response(data=data)
